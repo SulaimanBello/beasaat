@@ -47,4 +47,54 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
         observer.observe(el);
     });
+
+    // Contact Form Handling with Formspree
+    const contactForm = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const btnLoading = submitBtn.querySelector('.btn-loading');
+    const formStatus = document.getElementById('formStatus');
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // UI Loading State
+            submitBtn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-block';
+            formStatus.className = 'form-status';
+            formStatus.style.display = 'none';
+
+            // Submit to Formspree
+            try {
+                const formData = new FormData(contactForm);
+
+                // Replace YOUR_FORM_ID with your actual Formspree form ID
+                const response = await fetch('https://formspree.io/f/mankkdlq', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    formStatus.textContent = "Thank you! Your message has been sent successfully.";
+                    formStatus.classList.add('success');
+                    contactForm.reset();
+                } else {
+                    throw new Error('Submission failed');
+                }
+            } catch (error) {
+                console.error(error);
+                formStatus.textContent = "Oops! Something went wrong. Please try again later.";
+                formStatus.classList.add('error');
+            } finally {
+                submitBtn.disabled = false;
+                btnText.style.display = 'inline-block';
+                btnLoading.style.display = 'none';
+            }
+        });
+    }
 });

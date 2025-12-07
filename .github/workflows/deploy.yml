@@ -1,0 +1,29 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Production Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.PORT || '22' }}
+          source: "."
+          target: "/var/www/beasaat"
+          # Exclude files that are not needed on production or might be sensitive
+          rm: false # Do not remove existing files before copy (safer, unless clean install desired)
+          strip_components: 0
+          exclude: ".git,.github,.gitignore,DEPLOYMENT.md,FORMSPREE_SETUP.md,update-from-github.sh,README.md,LICENSE"

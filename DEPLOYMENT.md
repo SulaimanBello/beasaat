@@ -80,3 +80,24 @@ Secure your site with HTTPS using Let's Encrypt.
 sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx -d example.com -d www.example.com
 ```
+
+## 6. Automated Deployment via GitHub Actions
+
+This repository includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that automatically deploys changes to the production server whenever code is pushed to the `main` branch.
+
+### Setup
+
+To enable automated deployment, you must configure the following **Secrets** in your GitHub repository settings (`Settings` > `Secrets and variables` > `Actions`):
+
+| Secret Name | Description |
+| :--- | :--- |
+| `HOST` | The IP address or domain name of your server. |
+| `USERNAME` | The SSH username to log in as (e.g., `ubuntu` or `root`). |
+| `SSH_PRIVATE_KEY` | The content of your private SSH key. (The public key must be added to `~/.ssh/authorized_keys` on the server for the corresponding user). |
+| `PORT` | (Optional) The SSH port, defaults to `22`. |
+
+### Workflow Behavior
+
+1.  **Trigger**: Pushes to the `main` branch.
+2.  **Action**: Uses `scp` to copy the project files to `/var/www/beasaat`.
+3.  **Exclusions**: Excludes development files like `.git`, `.github`, and documentation.

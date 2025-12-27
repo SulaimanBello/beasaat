@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    environment:
+      - TZ=Africa/Lagos
+    labels:
+      - "com.easypanel.deployment=beasaat"
+      - "traefik.enable=true"
+      - "traefik.http.routers.beasaat.rule=Host(`your-domain.com`)"
+      - "traefik.http.routers.beasaat.entrypoints=websecure"
+      - "traefik.http.routers.beasaat.tls.certresolver=letsencrypt"
+      - "traefik.http.services.beasaat.loadbalancer.server.port=80"
